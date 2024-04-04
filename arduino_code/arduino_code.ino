@@ -1,41 +1,51 @@
-int IN1 = 2;  // Relay control pin
-//int IN2 = 3;
-//int IN3 = 4;
+#include <Arduino.h>
+#include <Ethernet.h>
+#include <PubSubClient.h>
 
-int Pin1 = A0;  // Water sensor. Air/dry is ~500-600
-//int Pin2 = A1;
-//int Pin3 = A2;
+byte mac[] = {}; // Ethernet MAC address
+IPAddress ip(192, 168, 1, 100); // Arduino's IP address
+const char* awsEndpoint = "YOUR_AWS_IOT_ENDPOINT";
+const char* clientId = "YOUR_CLIENT_ID";
+const char* awsTopic = "YOUR_MQTT_TOPIC";
 
-float value1 = 0;
-
-static const int heartbeat = 13;
+EthernetClient ethClient;
+PubSubClient mqttClient(ethClient);
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("Hello");
-  pinMode(IN1, OUTPUT);
-  pinMode(Pin1, INPUT);
-  pinMode(heartbeat)
-  digitalWrite(IN1, HIGH);
-  delay(1000);
+  Serial.begin(115200);
+  Ethernet.begin(mac, ip);
+  delay(1000); // Allow time for Ethernet to initialize
+  mqttClient.setServer(awsEndpoint, 8883); // MQTT over TLS
+  mqttClient.setCallback(callback);
 }
-void loop() {
-  Serial.print("MOISTURE LEVEL:");
-  moisture = analogRead(Pin1);
-  Serial.println(moisture);
-  
-  
-  if(value1>550)
-  {
-    // Water for 10 seconds
-    digitalWrite(IN1, LOW);
-    digitalWrite(heartbeat, HIGH);
-    delay(10000);
-    digitalWrite(heartbeat, LOW);
-    digitalWrite(IN1, HIGH);
-    // Wait 5 seconds before checking checking moisture levels again
-    delay(5000);
-  }
 
-  delay(1000);
+void loop() {
+  if (!mqttClient.connected()) {
+    reconnect();
+  }
+  mqttClient.loop();
+  // Read sensor data
+  int sensorValue = analogRead(A1);
+  // Publish sensor data to MQTT topic
+  mqttClient.publish(awsTopic, String(sensorValue).c_str());
+  delay(5000); // Publish every 5 seconds
+}
+
+void reconnect() {
+  while (!mqttClient.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (mqttClient.connect(clientId)) {
+      Serial.println("connected");
+      mqttClient.subscribe(awsTopic);
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(mqttClient.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  // Handle MQTT message received (optional)
 }

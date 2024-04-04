@@ -1,1 +1,5 @@
 This is some simple arduino code to automatically water your plants. You can buy all of what you need on amazon. There are some kits on amazon but usually they won't be complete and you'll have to make a few other purchases. Most obvious one is the arduino. At first I actually considered using a raspi for this but the moisture sensor that I used for this project provides analog outputs which the raspi doesn't have by default (although you can get a shield for that). At this point though I already felt I was spending too much money and a raspi is excessive for the scope of what I wanted to do.
+
+Update: Previously I was using a relay to power a pump to water my plants. It didn't take long to realise this was super over-engineered. I've updated the code now so the role of the arduino is to publish moisture information periodically to AWS. Then I can get a notification on my phone when moisture drops below a certain threshold as a reminder to water my plants.
+
+![Plant](Pic.JPG)
