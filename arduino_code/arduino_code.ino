@@ -8,6 +8,22 @@ const char* awsEndpoint = "YOUR_AWS_IOT_ENDPOINT";
 const char* clientId = "YOUR_CLIENT_ID";
 const char* awsTopic = "YOUR_MQTT_TOPIC";
 
+// Certificates
+const char* rootCACertificate = \
+"-----BEGIN CERTIFICATE-----\n" \
+"YOUR_ROOT_CA_CERTIFICATE_HERE" \
+"-----END CERTIFICATE-----\n";
+
+const char* deviceCertificate = \
+"-----BEGIN CERTIFICATE-----\n" \
+"YOUR_DEVICE_CERTIFICATE_HERE" \
+"-----END CERTIFICATE-----\n";
+
+const char* privateKey = \
+"-----BEGIN RSA PRIVATE KEY-----\n" \
+"YOUR_PRIVATE_KEY_HERE" \
+"-----END RSA PRIVATE KEY-----\n";
+
 EthernetClient ethClient;
 PubSubClient mqttClient(ethClient);
 
